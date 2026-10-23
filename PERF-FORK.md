@@ -1,0 +1,61 @@
+# PerfAGI Source Fork Guide
+
+This repository is a fork of [vxcontrol/pentagi](https://github.com/vxcontrol/pentagi) (MIT License) retooled into a multi-agent performance-testing platform. The upstream LICENSE stays at the repository root.
+
+- Upstream policy: **follow** — merge each upstream release instead of hard-forking away.
+- Rationale: upstream is active (32k stars, weekly cadence); security fixes (CVE-2026-14784) and new LLM support (DeepSeek V4, provider failover) are worth taking for free.
+- Conflict expectation: confined to the registration-point files listed in `PERF-FORK-CHANGES.md`; each merge should cost under half a day. AI-assisted conflict resolution works well: hand the conflicting hunk plus both sides' intent to an AI, then review its choice.
+
+## Branch model
+
+| Branch | Role |
+|---|---|
+| `origin/main` | Upstream mirror, fetch-only, never pushed to |
+| `perf-fork` | Main development branch, cut from `v2.2.0` |
+
+## Fork discipline (what keeps merges cheap)
+
+1. **Prefer new files**: the new agent (`pkg/providers/performer.go`), new tools (`pkg/tools/perf*.go`), new frontend pages all live in new files — nothing gets pasted into upstream files.
+2. **Upstream files take registrations only**: when an upstream file must change, the change is an added line (a tool registered in `tools/registry.go`, a PromptType in `templates.go`), never a refactor, move or rename of upstream code.
+3. **Ledger rule**: every edit to an upstream file is recorded in `PERF-FORK-CHANGES.md` (file, intent, expected conflict point); merges are reconciled against that list.
+4. **Commit granularity**: one feature per commit, for cherry-picks and rollbacks.
+5. **Pentest capability stays**: this is a dual-purpose platform; perf becomes a first-class citizen, nothing pentest-shaped gets deleted. A deletion needs a recorded reason in the ledger first.
+
+## Routine upstream sync (once per upstream release)
+
+```bash
+HTTPS_PROXY=http://127.0.0.1:7897 git fetch origin --tags
+git log perf-fork..origin/main --oneline          # what moved upstream
+git switch perf-fork
+git merge v2.3.0                                  # follow release tags, not loose main commits
+# Resolve conflicts against PERF-FORK-CHANGES.md: check each listed registration point
+# still carries both upstream's additions and ours.
+# Verify:
+docker build --build-arg PACKAGE_REV=$(git rev-parse --short HEAD) \
+  --build-arg HTTP_PROXY=http://host.docker.internal:7897 \
+  --build-arg HTTPS_PROXY=http://host.docker.internal:7897 \
+  --tag perfagi/dev:merge-test .
+# On success: docker save/load to the VM, smoke-test, then tag.
+```
+
+## Building (local Mac, Docker Desktop ≥ 8 GB)
+
+- Dependency downloads go through Clash: `host.docker.internal:7897` (Clash "allow LAN" must be on).
+- The Vite frontend build wants a 4 GB heap; give Docker Desktop ≥ 6 GB.
+- The VM (3.8 GB RAM) never builds — it receives images: `docker save perfagi/dev:x | gzip | ssh dsh-vm 'gunzip | docker load'`.
+- Local Go work (outside Docker) needs once per fresh clone: `go generate ./cmd/installer/files/` (see CLAUDE.md).
+
+## Deployment upgrade notes (2.1-era image → 2.2+)
+
+- Eight DB migrations run automatically; every user must sign in again.
+- Custom prompts: the old per-engine variables (`GoogleToolName` and friends) are gone — use `WebSearchToolName` (the perf prompts already comply, verified).
+- `DOCKER_INSIDE=false` is the 2.2 default; the VM already matches.
+- On the VM compose, switch the image field from `vxcontrol/pentagi:latest` to `perfagi/dev:<tag>` and `docker compose up -d pentagi`.
+
+## Backup remote (strongly recommended, against Mac disk loss)
+
+```bash
+# After creating a private GitHub repository:
+git remote add fork git@github.com:<account>/perfagi.git
+git push fork perf-fork
+```
