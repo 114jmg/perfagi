@@ -32,6 +32,8 @@ git merge v2.3.0                                  # follow release tags, not loo
 # still carries both upstream's additions and ours.
 # Verify:
 docker build --build-arg GOPROXY=https://goproxy.cn,direct \
+  --build-arg APT_MIRROR=mirrors.ustc.edu.cn \
+  --build-arg APK_MIRROR=mirrors.tuna.tsinghua.edu.cn \
   --build-arg PACKAGE_REV=$(git rev-parse --short HEAD) \
   --tag perfagi/dev:merge-test .
 # On success: docker save/load to the VM, smoke-test, then tag.
@@ -51,9 +53,11 @@ docker build \
   --build-arg GOPROXY=https://goproxy.cn,direct \
   --build-arg APT_MIRROR=mirrors.ustc.edu.cn \
   --build-arg APK_MIRROR=mirrors.tuna.tsinghua.edu.cn \
-  --build-arg PACKAGE_VER=ce --build-arg PACKAGE_REV=$REV \
+  --build-arg PACKAGE_REV=$REV \
   --tag perfagi/dev:2.2.0-base .
 ```
+
+Pass `PACKAGE_REV` and nothing else: `PACKAGE_VER` must stay empty for non-release builds — a word like `ce` makes the label read `ce-ce` while the binary reports `ce` (the version rule in the Dockerfile tail explains why).
 
 ## Deployment upgrade notes (2.1-era image → 2.2+)
 
