@@ -14,6 +14,14 @@ ENV PATH="$PNPM_HOME/bin:$PNPM_HOME:$PATH"
 
 WORKDIR /app/ui
 
+# The Debian CDN edge is unreliable from some networks; the build arg rewrites
+# deb.debian.org to a mirror host (e.g. mirrors.ustc.edu.cn) when set
+ARG APT_MIRROR=
+RUN if [ -n "$APT_MIRROR" ]; then \
+        sed -i "s|deb.debian.org|${APT_MIRROR}|g" \
+        $(grep -rl 'deb.debian.org' /etc/apt/sources.list /etc/apt/sources.list.d/ 2>/dev/null); \
+    fi
+
 # Install build essentials and enable pnpm via corepack
 RUN apt-get update && apt-get install -y \
     ca-certificates \
@@ -71,6 +79,13 @@ ENV GO111MODULE=on
 # the build arg lets a mirror (e.g. goproxy.cn) be selected per build
 ARG GOPROXY=https://proxy.golang.org,direct
 ENV GOPROXY=${GOPROXY}
+
+# Same mirror concern as the frontend stage: see the APT_MIRROR note there
+ARG APT_MIRROR=
+RUN if [ -n "$APT_MIRROR" ]; then \
+        sed -i "s|deb.debian.org|${APT_MIRROR}|g" \
+        $(grep -rl 'deb.debian.org' /etc/apt/sources.list /etc/apt/sources.list.d/ 2>/dev/null); \
+    fi
 
 # Install compilation toolchain and dependencies
 RUN apt-get update && apt-get install -y \
@@ -139,6 +154,13 @@ RUN go build -trimpath \
 # Stage 3: Production Runtime Environment
 # ========================================
 FROM alpine:3.23.5
+
+# Alpine's dl-cdn edge shares the reliability concern of the Debian CDN; the
+# build arg replaces the apk repository host when set (e.g. mirrors.tuna.tsinghua.edu.cn)
+ARG APK_MIRROR=
+RUN if [ -n "$APK_MIRROR" ]; then \
+        sed -i "s|dl-cdn.alpinelinux.org|${APK_MIRROR}|g" /etc/apk/repositories; \
+    fi
 
 # Establish non-privileged execution context with docker socket access
 RUN addgroup -g 998 docker && \

@@ -9,6 +9,7 @@ Format: `file | intent | expected conflict if upstream touches the same file`
 | Date | File | Intent | Expected conflict point |
 |---|---|---|---|
 | 2026-10-23 | `Dockerfile` | add a `GOPROXY` build arg + ENV in the api-builder stage so a mirror can replace proxy.golang.org on restricted networks; upstream default behavior unchanged | low — upstream rarely touches the ENV block near line 66 |
+| 2026-10-23 | `Dockerfile` | add `APT_MIRROR` (both Debian stages) and `APK_MIRROR` (Alpine runtime stage) build args rewriting the stock repository hosts when set; the Fastly CDN edge (deb.debian.org / dl-cdn.alpinelinux.org) intermittently returns 502 from this network under sustained load | low — sed lines sit right after the stage FROM/WORKDIR lines; rebase if upstream restructures stage headers |
 
 ## Planned entries (not yet applied)
 

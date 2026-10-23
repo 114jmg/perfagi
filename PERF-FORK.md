@@ -39,7 +39,7 @@ docker build --build-arg GOPROXY=https://goproxy.cn,direct \
 
 ## Building (local Mac, Docker Desktop ≥ 8 GB)
 
-- No proxy needed: apt (deb.debian.org), apk (dl-cdn.alpinelinux.org) and npm (registry.npmjs.org) are all directly reachable; Go modules go through `GOPROXY=https://goproxy.cn,direct` passed as a build arg (the Dockerfile exposes it).
+- The stock Debian/Alpine CDN edges (Fastly) intermittently 502 from this network, and proxy.golang.org is blocked outright; all three are bypassed with mirror build args — everything else (npm registry) is directly reachable.
 - If a proxy ever becomes necessary: Clash on this Mac only accepts loopback connections (macOS Local Network privacy blocks `host.docker.internal:7897` from containers, and `--network=host` on Docker Desktop reaches the Linux VM, not the Mac), so grant Clash Local Network access in System Settings first.
 - The Vite frontend build wants a 4 GB heap; give Docker Desktop ≥ 6 GB.
 - The VM (3.8 GB RAM) never builds — it receives images: `docker save perfagi/dev:x | gzip | ssh dsh-vm 'gunzip | docker load'`.
@@ -49,6 +49,8 @@ docker build --build-arg GOPROXY=https://goproxy.cn,direct \
 REV=$(git rev-parse --short HEAD)
 docker build \
   --build-arg GOPROXY=https://goproxy.cn,direct \
+  --build-arg APT_MIRROR=mirrors.ustc.edu.cn \
+  --build-arg APK_MIRROR=mirrors.tuna.tsinghua.edu.cn \
   --build-arg PACKAGE_VER=ce --build-arg PACKAGE_REV=$REV \
   --tag perfagi/dev:2.2.0-base .
 ```
