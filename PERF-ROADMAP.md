@@ -56,8 +56,8 @@ M2 多agent提示词 ─┘            ↑
 
 | 里程碑 | 内容 | 载体 | 预估 | 状态 |
 |---|---|---|---|---|
-| M1 | 异步实验引擎 + 实验索引 | target-ctl(Python) | 2-3 天 | 未开始 |
-| M2 | 多 agent 提示词体系 v2(重点) | DB overlay | 1-2 周起,持续打磨 | 未开始 |
+| M1 | 异步实验引擎 + 实验索引 | target-ctl(Python) | 2-3 天 | ✅ 完成(2026-10-23) |
+| M2 | 多 agent 提示词体系 v2(重点) | DB overlay | 1-2 周起,持续打磨 | 🔄 A 队完成(2026-10-24),B 队排队 |
 | M3 | 一句话管线首达 | overlay 编排 | 3-5 天 | 未开始 |
 | M4 | 基准任务套件 + 评分 | 脚本+文档 | 首套 2 天,之后每次修订 30 分钟 | 未开始 |
 | M5 | performer agent 一等公民 | fork(Go/GraphQL/前端) | 3-5 天 | 未开始 |
@@ -226,3 +226,21 @@ M2 多agent提示词 ─┘            ↑
   perf-run 新增 async/status/wait/list;10 分钟 soak 异步全程不超时,
   排队接棒与全部 409 路径实测通过。HTML 索引页状态列+自动刷新。
   **下一动作:M2 多 agent 提示词体系 v2**(从 primary-perf 总指挥开始)。
+- 2026-10-24 凌晨:**M2 A 队完成并实测验收**——新基建 `perfagi/prompts/`:
+  文件名=DB prompt_type、`deploy-prompts.py`(变量白名单+{{if}}平衡校验,
+  校验不过绝不入库,只推 perf 账号)、每角色 NOTES。A 队三份:
+  `primary_agent`(总指挥:名册重映射+实验委派质量条+证据标准)、
+  `generator`(六阶段性能管线替代渗透特例;修掉上游重复段 bug;
+  一句话/精确请求自适应)、`pentester` v2(异步实验姿势:提交→短轮询→取
+  结果,禁止一次调用吞长跑;409 并发语义;k6/JMeter 决策树;Little 定律
+  负载速查;冒烟门与归因门标为硬门)。
+  **实测**(perf 账号 flow #24,一句话"订单接口冒烟压测"):五 overlay
+  零校验警告;generator 拆出 契约→脚本→冒烟→判定+报告 4 子任务(全中文);
+  refiner 中途重规划但管线结构保持;agent 自主完成 /info 九项核验、脚本
+  编写、perf-run smoke(run 20261023-181438-a174, 1555 rps, p95 0.76ms)、
+  报告链接输出。**顺手修 M1 契约漏洞**:/info USAGE 未写死 summary 键名,
+  导致 agent 自造 p95/avg 键→分析缺 SLA 行、p95 列为空;已补 canonical
+  键名契约 + parse_summary 别名归一(p95→p95_ms 等,实测生效)。
+  **下一动作:M2 B 队**——coder(脚本工匠,k6/JMX 契约与 handleSummary
+  完整键)、installer(环境管家)、searcher、memorist、adviser、
+  task_descriptor/flow_descriptor(中文语义标题)、refiner、assistant。
