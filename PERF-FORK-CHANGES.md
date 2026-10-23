@@ -8,7 +8,7 @@ Format: `file | intent | expected conflict if upstream touches the same file`
 
 | Date | File | Intent | Expected conflict point |
 |---|---|---|---|
-| (empty) | | | |
+| 2026-10-23 | `Dockerfile` | add a `GOPROXY` build arg + ENV in the api-builder stage so a mirror can replace proxy.golang.org on restricted networks; upstream default behavior unchanged | low — upstream rarely touches the ENV block near line 66 |
 
 ## Planned entries (not yet applied)
 

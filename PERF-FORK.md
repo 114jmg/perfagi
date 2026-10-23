@@ -31,19 +31,27 @@ git merge v2.3.0                                  # follow release tags, not loo
 # Resolve conflicts against PERF-FORK-CHANGES.md: check each listed registration point
 # still carries both upstream's additions and ours.
 # Verify:
-docker build --build-arg PACKAGE_REV=$(git rev-parse --short HEAD) \
-  --build-arg HTTP_PROXY=http://host.docker.internal:7897 \
-  --build-arg HTTPS_PROXY=http://host.docker.internal:7897 \
+docker build --build-arg GOPROXY=https://goproxy.cn,direct \
+  --build-arg PACKAGE_REV=$(git rev-parse --short HEAD) \
   --tag perfagi/dev:merge-test .
 # On success: docker save/load to the VM, smoke-test, then tag.
 ```
 
 ## Building (local Mac, Docker Desktop ≥ 8 GB)
 
-- Dependency downloads go through Clash: `host.docker.internal:7897` (Clash "allow LAN" must be on).
+- No proxy needed: apt (deb.debian.org), apk (dl-cdn.alpinelinux.org) and npm (registry.npmjs.org) are all directly reachable; Go modules go through `GOPROXY=https://goproxy.cn,direct` passed as a build arg (the Dockerfile exposes it).
+- If a proxy ever becomes necessary: Clash on this Mac only accepts loopback connections (macOS Local Network privacy blocks `host.docker.internal:7897` from containers, and `--network=host` on Docker Desktop reaches the Linux VM, not the Mac), so grant Clash Local Network access in System Settings first.
 - The Vite frontend build wants a 4 GB heap; give Docker Desktop ≥ 6 GB.
 - The VM (3.8 GB RAM) never builds — it receives images: `docker save perfagi/dev:x | gzip | ssh dsh-vm 'gunzip | docker load'`.
 - Local Go work (outside Docker) needs once per fresh clone: `go generate ./cmd/installer/files/` (see CLAUDE.md).
+
+```bash
+REV=$(git rev-parse --short HEAD)
+docker build \
+  --build-arg GOPROXY=https://goproxy.cn,direct \
+  --build-arg PACKAGE_VER=ce --build-arg PACKAGE_REV=$REV \
+  --tag perfagi/dev:2.2.0-base .
+```
 
 ## Deployment upgrade notes (2.1-era image → 2.2+)
 

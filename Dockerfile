@@ -67,6 +67,11 @@ ARG PACKAGE_EDITION=ce
 ENV CGO_ENABLED=0
 ENV GO111MODULE=on
 
+# Module downloads default to proxy.golang.org, unreachable from some networks;
+# the build arg lets a mirror (e.g. goproxy.cn) be selected per build
+ARG GOPROXY=https://proxy.golang.org,direct
+ENV GOPROXY=${GOPROXY}
+
 # Install compilation toolchain and dependencies
 RUN apt-get update && apt-get install -y \
     ca-certificates \
