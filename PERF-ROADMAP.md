@@ -218,4 +218,11 @@ M2 多agent提示词 ─┘            ↑
 ## 八、当前状态(每次会话结束时更新)
 
 - 2026-10-23:fork 基建完成(perf-fork@v2.2.0,基线镜像已冒烟,GitHub 备份就位,
-  VM 磁盘 100G/12 容器健康,双账号分流运行中)。路线图定稿,下一动作:**M1 异步实验引擎**。
+  VM 磁盘 100G/12 容器健康,双账号分流运行中)。路线图定稿。
+- 2026-10-23 晚:**M1 异步实验引擎完成并验收**——POST /run 异步模式(唯一
+  排队槽,409 语义),GET /runs/<id>/status(phase+elapsed,免令牌)、
+  /runs/<id>/result(完整载荷)、/runs?format=json(过滤+分页);SQLite 索引
+  (artifacts/index.db,重启恢复+历史回填+保留策略 PERFAGI_KEEP_RUNS=200);
+  perf-run 新增 async/status/wait/list;10 分钟 soak 异步全程不超时,
+  排队接棒与全部 409 路径实测通过。HTML 索引页状态列+自动刷新。
+  **下一动作:M2 多 agent 提示词体系 v2**(从 primary-perf 总指挥开始)。
