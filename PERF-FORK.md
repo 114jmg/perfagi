@@ -66,10 +66,8 @@ Pass `PACKAGE_REV` and nothing else: `PACKAGE_VER` must stay empty for non-relea
 - `DOCKER_INSIDE=false` is the 2.2 default; the VM already matches.
 - On the VM compose, switch the image field from `vxcontrol/pentagi:latest` to `perfagi/dev:<tag>` and `docker compose up -d pentagi`.
 
-## Backup remote (strongly recommended, against Mac disk loss)
+## Backup remote (in place)
 
-```bash
-# After creating a private GitHub repository:
-git remote add fork git@github.com:<account>/perfagi.git
-git push fork perf-fork
-```
+- Remote `fork` → `git@github-perfagi:114jmg/perfagi.git` (SSH deploy key, write access, `~/.ssh/config` host alias `github-perfagi`).
+- `perf-fork` mirrors to `main`; all upstream tags are pushed as merge references.
+- Push after every accepted change: `git push fork perf-fork:main` (plus `git push fork --tags` after merging a new upstream release).
