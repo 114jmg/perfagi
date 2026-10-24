@@ -266,3 +266,30 @@ M2 多agent提示词 ─┘            ↑
   冒烟 run 20261024-014216-7ec5 check_failure_rate=0。
   **下一动作**:searcher(技术调研)→ memorist → adviser → descriptors →
   refiner → assistant。
+
+  **B 队进度 #3(2026-10-24,searcher/memorist/adviser/descriptors/refiner 五连发)**:
+  `searcher`(技术调研)——上游两处遗留问题未复制(语言策略与工具矩阵列出"memorist 委派"
+  通道,但该 prompt 类型无 MemoristToolName 变量,照抄诱导幻觉工具调用;mode=exploit 与性能
+  无关);新增 **RESEARCH SOURCE HIERARCHY**(官方文档>release notes>源码/issue>博客>论坛,
+  版本钉死,答案声明来源层级)+交付体量纪律(查询类 5-15 行,深调研先给答案)。实测 flow 27:
+  首轮即被委派,13K 结论引 12 个 URL,并**从 k6 源码 metrics/metric.go AddSubmetric 确认
+  group:::name 三冒号来源(根组空串)**——反向验证了 /info 与 coder overlay 的 groups 契约。
+  `memorist`(实验记忆)——核心增量 **`<memory_channels>` 双通道**:实验索引(/runs+/artifacts,
+  "实际跑过什么"的权威)vs 向量库("写过什么知识");引用纪律(run 主张给 run_id/report_url,
+  永不把向量库回忆冒充 run 记录,冲突时索引优先)。实测 flow 28:诚实声明向量库仅命中自身
+  回声(match≈0.49-0.50)后转投索引,枚举 26 个 run、给出 480-490 rps 吞吐上限结论。
+  `adviser`(方法论导师)——OOB 攻击基建段删除;**BACKEND TERMINAL EXECUTION MECHANICS
+  整段重写**为 perf-run 六误用(一次调用吞长跑/盲目重试 409/未冒烟上负载/未完成读结果/
+  比较不可比 run/硬扛 timeout)+诊断命令;新增 **EXPERIMENT REVIEW CHECKLIST** 8 条
+  (问题先行/闭开模型+Little 算术/阶梯设计/可比性/基线决策/三层证据链/统计/停止条件);
+  "信息增益为零的 run 是最贵的错误"写进 CORE RESPONSIBILITIES。
+  `task/flow_descriptor`——标题=目标面+实验类型(容量压测/冒烟/soak/A-B 对比/瓶颈诊断/
+  复测回归)+问题,决定性参数写入。
+  `refiner`——delta-ops 机制原样;**原则 5 改为 Invariants Over Speed**(冒烟先于负载/
+  分析先于报告/对比前复位/一次一个实验不可让步);新增 6 条 Performance-Specific Refinement
+  Rules(冒烟失败→修+重冒烟永不重排、低 VU SLA 失败→插归因而非报单点、问题已答→不重跑、
+  409→围绕队列重排、交付物缺失→聚焦恢复、可比性破坏→对齐重排);分布改 10/15/30/25/20。
+  **实测(flow 29,一句话"找出订单接口的容量拐点…")**:13 份 overlay 全过 Go 校验器 0 警告;
+  flow 标题"订单接口容量拐点定位"、任务标题含容量压测+p95/吞吐+成因;6 子任务
+  脚本→冒烟门→VU 阶梯→加密拐点→服务端交叉归因→分档对比报告,管线不变量结构性成立。
+  **B 队余量**:assistant(+question_* 其余变体+reporter 若拆)。
