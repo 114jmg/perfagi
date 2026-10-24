@@ -293,3 +293,18 @@ M2 多agent提示词 ─┘            ↑
   flow 标题"订单接口容量拐点定位"、任务标题含容量压测+p95/吞吐+成因;6 子任务
   脚本→冒烟门→VU 阶梯→加密拐点→服务端交叉归因→分档对比报告,管线不变量结构性成立。
   **B 队余量**:assistant(+question_* 其余变体+reporter 若拆)。
+
+  **B 队进度 #4(2026-10-24,assistant + question_* 变体,收尾)**:`assistant`(性能助手)——
+  保留双通道语言策略/SENIOR MENTOR/**AUTOMATION FLOW MANAGEMENT 整段机制**;领域重灌注为
+  性能工程;新增对客纪律"报数不承诺"(能不能扛 X rps 的回答是实验方案)。question_* 7 份:
+  coder/installer/searcher/memorist/adviser 指令性能化;question_execution_monitor 的 MSF
+  误用清单与 question_task_planner 的 MSF 规划约束**整段替换**为 perf-run 误用/异步规划规则;
+  reflector/enricher 纯机制不建 overlay。**重要副产物**:deploy-prompts.py 校验器对齐 Go
+  语义(只查字段路径根段、range 体内裸字段跳过),双向验证通过——修正了此前对链式访问的
+  误报风险。
+  **B 队状态**:8/8 全部完成(coder/installer/searcher/memorist/adviser/descriptors/
+  refiner/assistant),overlay 共 19 份入库并经 Go 校验器加载 0 警告。
+  **阻断(2026-10-24T02:27Z)**:DeepSeek 账户余额耗尽(API 402 Insufficient Balance),
+  flow 29(容量拐点验收)在 coder 委派时失败、flow 30 选镜像即失败。**flow 29 已证明总指挥
+  把脚本编写委派给 coder 且委派问题书携带完整契约**——coder overlay 验收仅差余额恢复后
+  重跑。M2 剩余:余额恢复后跑通一个完整 flow 的端到端验收(含 coder/pentester 实测)。
