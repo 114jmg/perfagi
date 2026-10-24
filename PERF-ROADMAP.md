@@ -253,5 +253,16 @@ M2 多agent提示词 ─┘            ↑
   threshold 不够——agent 会自造 group_p95_ms 扁平键)与报告端 `_num`→`_agg_mid`
   (多轮聚合叶子是 {min,p50,max,n},原实现渲染 0)。实测 run 20261024-012044-2020
   分端点表正常。
-  **下一动作**:installer(环境管家)→ searcher → memorist → adviser →
-  descriptors → refiner → assistant。
+  **B 队进度 #2(2026-10-24)**:`installer`(环境管家)完成——SOFTWARE
+  INSTALLATION PROTOCOL 整体替换为 ENVIRONMENT PROTOCOL 四段:
+  baseline_contract(perf-reset 真实语义+何时复位/何时故意不复位+复位后必须
+  "证明"状态)、health_checklist(5 条带原始输出的检查)、queue_discipline
+  (串行/409 语义/僵尸 queued)、environment_facts(栈拓扑事实成文档)。
+  保留其独特的语言策略变体(结果也本地化——flow 引擎依赖)。
+  **实测**(flow 26,"复位+核验+冒烟"):installer 被真实委派两次——209 契约/工
+  具就绪核验给出检查项/命令/原始输出/判定四列表+raw 归档;214 perf-reset
+  带队列预检 ACTIVE_RUNS=0、逐字 JSON、sha256;215 九项状态核验
+  (orders=0/customers=20000/products=2000/redis keys=0/up=1/队列空)全 PASS;
+  冒烟 run 20261024-014216-7ec5 check_failure_rate=0。
+  **下一动作**:searcher(技术调研)→ memorist → adviser → descriptors →
+  refiner → assistant。
