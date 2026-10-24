@@ -303,7 +303,11 @@ M2 多agent提示词 ─┘            ↑
   语义(只查字段路径根段、range 体内裸字段跳过),双向验证通过——修正了此前对链式访问的
   误报风险。
   **B 队状态**:8/8 全部完成(coder/installer/searcher/memorist/adviser/descriptors/
-  refiner/assistant),overlay 共 19 份入库并经 Go 校验器加载 0 警告。
+  refiner/assistant),overlay 共 19 份入库。**强验收**:经线上 `validatePrompt` mutation
+  (直通 pkg/templates/validator 的 Go 校验器)逐份校验,16 个 GraphQL 暴露类型
+  (primary_agent/assistant/pentester/coder/installer/searcher/memorist/adviser/generator/
+  refiner + 6 个 question_*)全部 success;task/flow_descriptor 与 image_chooser 不在
+  PromptType 枚举内,由 python 校验器覆盖。
   **阻断(2026-10-24T02:27Z)**:DeepSeek 账户余额耗尽(API 402 Insufficient Balance),
   flow 29(容量拐点验收)在 coder 委派时失败、flow 30 选镜像即失败。**flow 29 已证明总指挥
   把脚本编写委派给 coder 且委派问题书携带完整契约**——coder overlay 验收仅差余额恢复后
