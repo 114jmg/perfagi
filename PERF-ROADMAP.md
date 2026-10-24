@@ -241,6 +241,17 @@ M2 多agent提示词 ─┘            ↑
   报告链接输出。**顺手修 M1 契约漏洞**:/info USAGE 未写死 summary 键名,
   导致 agent 自造 p95/avg 键→分析缺 SLA 行、p95 列为空;已补 canonical
   键名契约 + parse_summary 别名归一(p95→p95_ms 等,实测生效)。
-  **下一动作:M2 B 队**——coder(脚本工匠,k6/JMX 契约与 handleSummary
-  完整键)、installer(环境管家)、searcher、memorist、adviser、
-  task_descriptor/flow_descriptor(中文语义标题)、refiner、assistant。
+  **B 队进度(2026-10-24)**:`coder`(脚本工匠)完成——k6/JMX 契约
+  (URL 必须 __ENV.TARGET、禁 scenarios、group 子度量+groups 对象发射、canonical
+  summary 键、think time、种子区间参数化、静态校验 7 步清单、脚本头注释);
+  上游破损的 DELEGATION 段(未闭合标签+重复名册)未复制;共享容器事实已核实
+  (tools/terminal.go 单一 primary 终端,/work 全角色可见)。
+  **实测**:flow 25(参数化 80/20 读写脚本)由总指挥亲自落地,质量命中规范
+  ——/info USAGE 在起教育作用;冒烟 rps=1.6 验证 think-time 闭模型数学。
+  coder overlay 本身待首个"脚本编写委派"实测。顺手又修两处平台-脚本契约:
+  USAGE 补 groups 对象发射契约(报告分端点表读 summary.groups,只教 group()+
+  threshold 不够——agent 会自造 group_p95_ms 扁平键)与报告端 `_num`→`_agg_mid`
+  (多轮聚合叶子是 {min,p50,max,n},原实现渲染 0)。实测 run 20261024-012044-2020
+  分端点表正常。
+  **下一动作**:installer(环境管家)→ searcher → memorist → adviser →
+  descriptors → refiner → assistant。
